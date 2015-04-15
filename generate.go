@@ -43,6 +43,8 @@ func generate_markov (seed_word string, target_word_count int) string {
 
   one_word_chain := make(map[string][]string)
   two_word_chain := make(map[string][]string)
+  enable_wrapping := true
+  last_word := ""
 
   for _, line := range lines {
     //fmt.Println(i, line)
@@ -51,8 +53,17 @@ func generate_markov (seed_word string, target_word_count int) string {
       if index >= 0 && index < len(words) - 1 {
         map_index := words[index]
         one_word_chain[map_index] = append(one_word_chain[map_index], words[index+1])
-        if index > 0 {
-          two_word_map_index := words[index-1] + " " + value
+        if enable_wrapping && index > 0 {
+          last_word = words[index-1]
+        }
+        if index > 0 || last_word != "" {
+          var first_word string
+          if last_word == "" {
+            first_word = words[index-1]
+          } else {
+            first_word = last_word
+          }
+          two_word_map_index := first_word + " " + value
           two_word_chain[two_word_map_index] = append(two_word_chain[two_word_map_index], words[index+1])
         }
       }

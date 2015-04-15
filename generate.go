@@ -43,28 +43,31 @@ func generate_markov (seed_word string, target_word_count int) string {
 
   one_word_chain := make(map[string][]string)
   two_word_chain := make(map[string][]string)
-  enable_wrapping := true
-  last_word := ""
+  rolling_two_words := []string{"",""}
+//  enable_wrapping := true
+//  last_word := ""
 
-  for _, line := range lines {
+  words := strings.Split(lines[0], " ")
+  for lines_index := range lines {
     //fmt.Println(i, line)
-    words := strings.Split(line, " ")
-    for index, value := range words {
-      if index >= 0 && index < len(words) - 1 {
+    for index := range words {
+      if index <= len(words) - 1 {
         map_index := words[index]
-        one_word_chain[map_index] = append(one_word_chain[map_index], words[index+1])
-        if enable_wrapping && index > 0 {
-          last_word = words[index-1]
+        var next_word string
+        if index < len(words) -1 {
+          next_word = words[index+1]
+        } else if lines_index < len(lines)-1{
+          words = strings.Split(lines[lines_index+1], " ")
+          next_word = words[0]
+        } else {
+          continue
         }
-        if index > 0 || last_word != "" {
-          var first_word string
-          if last_word == "" {
-            first_word = words[index-1]
-          } else {
-            first_word = last_word
-          }
-          two_word_map_index := first_word + " " + value
-          two_word_chain[two_word_map_index] = append(two_word_chain[two_word_map_index], words[index+1])
+        rolling_two_words[1] = rolling_two_words[0]
+        rolling_two_words[0] = map_index
+        one_word_chain[map_index] = append(one_word_chain[map_index], next_word)
+        if rolling_two_words[1] != "" {
+          two_word_map_index := rolling_two_words[1] + " " + rolling_two_words[0]
+          two_word_chain[two_word_map_index] = append(two_word_chain[two_word_map_index], next_word)
         }
       }
     }
@@ -102,6 +105,9 @@ func generate_markov (seed_word string, target_word_count int) string {
     }
     i++
     if i >= chain_length && out_string[len(out_string)-1:] == "." {
+      finished = true
+    }
+    if i > 2 * chain_length {
       finished = true
     }
   }

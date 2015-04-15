@@ -36,16 +36,20 @@ func main() {
     log.Fatalf("readLines: %s", err)
   }
 
-  chain := make(map[string][]string)
+  one_word_chain := make(map[string][]string)
+  two_word_chain := make(map[string][]string)
 
   for _, line := range lines {
     //fmt.Println(i, line)
     words := strings.Split(line, " ")
     for index, value := range words {
-      if index > 0 && index < len(words) - 1 {
-        fmt.Println(value)
-        map_index := words[index-1] + " " + value
-        chain[map_index] = append(chain[map_index], words[index+1])
+      if index >= 0 && index < len(words) - 1 {
+        map_index := words[index]
+        one_word_chain[map_index] = append(one_word_chain[map_index], words[index+1])
+        if index > 0 {
+          two_word_map_index := words[index-1] + " " + value
+          two_word_chain[two_word_map_index] = append(two_word_chain[two_word_map_index], words[index+1])
+        }
       }
     }
   }
@@ -57,14 +61,24 @@ func main() {
 
   for i:=0; i<=chain_length; i++ {
     key_string_parts := strings.Split(out_string, " ")
-    key_string := key_string_parts[len(key_string_parts)-2] + " " + key_string_parts[len(key_string_parts)-1]
-    potential_next_words := chain[key_string]
-    fmt.Println(out_string)
-    key := random(0, len(potential_next_words)-1)
+    two_word_key_string := key_string_parts[len(key_string_parts)-2] + " " + key_string_parts[len(key_string_parts)-1]
+    one_word_key_string := key_string_parts[len(key_string_parts)-1]
+    potential_next_words := two_word_chain[two_word_key_string]
+//    fmt.Println(out_string)
+    if len(potential_next_words) == 0 {
+//      fmt.Println("no two word link found")
+      potential_next_words = one_word_chain[one_word_key_string]
+    } else {
+//      fmt.Println("two word link found")
+    }
+//    fmt.Println("length of potential_next_words %v", len(potential_next_words))
+    key := 0
+    if len(potential_next_words) > 1 {
+      key = random(0, len(potential_next_words)-1)
+    }
     out_string += " "
     out_string += potential_next_words[key]
   }
 
   fmt.Println(out_string)
-
 }

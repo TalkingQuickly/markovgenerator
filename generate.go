@@ -58,26 +58,28 @@ func main() {
   seed_words := "His tone"
   chain_length := 15
   out_string := seed_words
+  finished := false
+  i := 0
 
-  for i:=0; i<=chain_length; i++ {
+  for finished != true {
     key_string_parts := strings.Split(out_string, " ")
     two_word_key_string := key_string_parts[len(key_string_parts)-2] + " " + key_string_parts[len(key_string_parts)-1]
     one_word_key_string := key_string_parts[len(key_string_parts)-1]
     potential_next_words := two_word_chain[two_word_key_string]
-//    fmt.Println(out_string)
     if len(potential_next_words) == 0 {
-//      fmt.Println("no two word link found")
       potential_next_words = one_word_chain[one_word_key_string]
     } else {
-//      fmt.Println("two word link found")
     }
-//    fmt.Println("length of potential_next_words %v", len(potential_next_words))
     key := 0
     if len(potential_next_words) > 1 {
       key = random(0, len(potential_next_words)-1)
     }
     out_string += " "
     out_string += potential_next_words[key]
+    i++
+    if i >= chain_length && out_string[len(out_string)-1:] == "." {
+      finished = true
+    }
   }
 
   fmt.Println(out_string)

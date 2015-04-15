@@ -8,6 +8,10 @@ import (
   "strings"
   "math/rand"
   "time"
+  "net/http"
+//  "html"
+  "github.com/gorilla/mux"
+  "strconv"
 )
 
 func random(min, max int) int {
@@ -31,7 +35,7 @@ func readLines(path string) ([]string, error) {
 }
 
 
-func generate_markov (seed_word string) string {
+func generate_markov (seed_word string, target_word_count int) string {
   lines, err := readLines("source.txt")
   if err != nil {
     log.Fatalf("readLines: %s", err)
@@ -57,7 +61,7 @@ func generate_markov (seed_word string) string {
 
   // now actually generate a sentence
   seed_words := seed_word
-  chain_length := 15
+  chain_length := target_word_count
   out_string := seed_words
   finished := false
   i := 0
@@ -95,5 +99,19 @@ func generate_markov (seed_word string) string {
 }
 
 func main() {
-  fmt.Println(generate_markov("His"))
+  fmt.Println("listening on port: " + os.Getenv("PORT"))
+  router := mux.NewRouter().StrictSlash(true)
+  router.HandleFunc("/", Index)
+  log.Fatal(http.ListenAndServe(":"+os.Getenv("PORT"), router))
+}
+
+func Index(w http.ResponseWriter, r *http.Request) {
+//    vars := mux.Vars(r)
+    length_param := r.URL.Query().Get("length")
+    i, err := strconv.Atoi(length_param)
+    if err != nil {
+      fmt.Println("error getting length parameter, it was: " + length_param)
+      i = 15
+    }
+    fmt.Fprintf(w, generate_markov("His", i))
 }

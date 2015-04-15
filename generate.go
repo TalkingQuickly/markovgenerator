@@ -55,15 +55,20 @@ func main() {
   }
 
   // now actually generate a sentence
-  seed_words := "His tone"
+  seed_words := "His"
   chain_length := 15
   out_string := seed_words
   finished := false
   i := 0
+  var two_word_key_string string
 
   for finished != true {
     key_string_parts := strings.Split(out_string, " ")
-    two_word_key_string := key_string_parts[len(key_string_parts)-2] + " " + key_string_parts[len(key_string_parts)-1]
+    if len(key_string_parts) > 1 {
+      two_word_key_string = key_string_parts[len(key_string_parts)-2] + " " + key_string_parts[len(key_string_parts)-1]
+    } else {
+      two_word_key_string = "asdfasdf asdfasdfas"
+    }
     one_word_key_string := key_string_parts[len(key_string_parts)-1]
     potential_next_words := two_word_chain[two_word_key_string]
     if len(potential_next_words) == 0 {
@@ -74,7 +79,11 @@ func main() {
       key = random(0, len(potential_next_words)-1)
     }
     out_string += " "
-    out_string += potential_next_words[key]
+    if len(potential_next_words) > 0 {
+      out_string += potential_next_words[key]
+    } else {
+      finished = true
+    }
     i++
     if i >= chain_length && out_string[len(out_string)-1:] == "." {
       finished = true

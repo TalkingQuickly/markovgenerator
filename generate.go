@@ -110,8 +110,12 @@ func Index(w http.ResponseWriter, r *http.Request) {
     length_param := r.URL.Query().Get("length")
     i, err := strconv.Atoi(length_param)
     if err != nil {
-      fmt.Println("error getting length parameter, it was: " + length_param)
       i = 15
     }
-    fmt.Fprintf(w, generate_markov("His", i))
+    seed_param := r.URL.Query().Get("seed")
+    if seed_param == "" {
+      fmt.Fprintf(w, "you must provide the 'seed' parameter")
+    } else {
+      fmt.Fprintf(w, generate_markov(seed_param, i))
+    }
 }

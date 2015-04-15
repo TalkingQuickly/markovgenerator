@@ -68,7 +68,6 @@ func main() {
     potential_next_words := two_word_chain[two_word_key_string]
     if len(potential_next_words) == 0 {
       potential_next_words = one_word_chain[one_word_key_string]
-    } else {
     }
     key := 0
     if len(potential_next_words) > 1 {

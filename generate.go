@@ -6,8 +6,8 @@ import (
   "log"
   "os"
   "strings"
- "math/rand"
-    "time"
+  "math/rand"
+  "time"
 )
 
 func random(min, max int) int {

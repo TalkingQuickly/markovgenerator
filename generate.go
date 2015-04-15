@@ -30,7 +30,8 @@ func readLines(path string) ([]string, error) {
   return lines, scanner.Err()
 }
 
-func main() {
+
+func generate_markov (seed_word string) string {
   lines, err := readLines("source.txt")
   if err != nil {
     log.Fatalf("readLines: %s", err)
@@ -55,7 +56,7 @@ func main() {
   }
 
   // now actually generate a sentence
-  seed_words := "His"
+  seed_words := seed_word
   chain_length := 15
   out_string := seed_words
   finished := false
@@ -90,5 +91,9 @@ func main() {
     }
   }
 
-  fmt.Println(out_string)
+  return out_string
+}
+
+func main() {
+  fmt.Println(generate_markov("His"))
 }

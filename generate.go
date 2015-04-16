@@ -41,6 +41,8 @@ func readLines(path string) ([]string, error) {
     "am tired" : ["of", now"]
     ....
   }
+
+  This is done by looping over a supplied text file.
 */
 func CreateGraph(path string) (map[string][]string, map[string][]string) {
   source := path

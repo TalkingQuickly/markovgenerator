@@ -29,8 +29,8 @@ func readLines(path string) ([]string, error) {
   return lines, scanner.Err()
 }
 
-func Generate(seed_word string, target_word_count int) string {
-  source := "thedaddy.txt"
+func CreateGraph(path string) (map[string][]string, map[string][]string) {
+  source := path
   lines, err := readLines(source)
   if err != nil {
     log.Fatalf("readLines: %s", err)
@@ -65,6 +65,10 @@ func Generate(seed_word string, target_word_count int) string {
       }
     }
   }
+  return one_word_chain, two_word_chain
+}
+
+func Generate(seed_word string, target_word_count int, one_word_chain map[string][]string, two_word_chain map[string][]string) string {
 
   // now actually generate a sentence
   seed_words := seed_word

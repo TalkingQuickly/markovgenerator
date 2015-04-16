@@ -9,11 +9,13 @@ import (
   "time"
 )
 
+// generate a random number between min and max
 func random(min, max int) int {
     rand.Seed(time.Now().Unix())
     return rand.Intn(max - min) + min
 }
 
+// Read a text file into an array of lines
 func readLines(path string) ([]string, error) {
   file, err := os.Open(path)
   if err != nil {
@@ -29,6 +31,17 @@ func readLines(path string) ([]string, error) {
   return lines, scanner.Err()
 }
 
+/*
+  Generate a map of words (both single words and pairs) as keys
+  with the values being an array of the words which could follow
+  them. E.g.
+
+  two_word_chain{
+    "i am" : ["tired", "hungry", lost"]
+    "am tired" : ["of", now"]
+    ....
+  }
+*/
 func CreateGraph(path string) (map[string][]string, map[string][]string) {
   source := path
   lines, err := readLines(source)
@@ -68,9 +81,19 @@ func CreateGraph(path string) (map[string][]string, map[string][]string) {
   return one_word_chain, two_word_chain
 }
 
-func Generate(seed_word string, target_word_count int, one_word_chain map[string][]string, two_word_chain map[string][]string) string {
+/*
+  Take a seed word, a target number of words and a graph generated
+  with "CreateGraph" above and create a sentence from it.
 
-  // now actually generate a sentence
+  The model is simple. Take a seed word, look for the first word/
+  two words as a key in the appropriate map. This gives us an array
+  of words which could come next. Randomly pick on of these then
+  repeat the process until we've reached the target number of words.
+
+  Once we reach the target number of words, continue until we find
+  a full stop so that we get full sentences.
+*/
+func Generate(seed_word string, target_word_count int, one_word_chain map[string][]string, two_word_chain map[string][]string) string {
   seed_words := seed_word
   chain_length := target_word_count
   out_string := seed_words

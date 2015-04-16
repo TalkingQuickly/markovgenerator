@@ -1,17 +1,12 @@
-package main
+package markovgenerator
 
 import (
   "bufio"
-  "fmt"
   "log"
   "os"
   "strings"
   "math/rand"
   "time"
-  "net/http"
-//  "html"
-  "github.com/gorilla/mux"
-  "strconv"
 )
 
 func random(min, max int) int {
@@ -34,9 +29,9 @@ func readLines(path string) ([]string, error) {
   return lines, scanner.Err()
 }
 
-
-func generate_markov (seed_word string, target_word_count int) string {
-  lines, err := readLines("source.txt")
+func Generate(seed_word string, target_word_count int) string {
+  source := "thedaddy.txt"
+  lines, err := readLines(source)
   if err != nil {
     log.Fatalf("readLines: %s", err)
   }
@@ -44,8 +39,6 @@ func generate_markov (seed_word string, target_word_count int) string {
   one_word_chain := make(map[string][]string)
   two_word_chain := make(map[string][]string)
   rolling_two_words := []string{"",""}
-//  enable_wrapping := true
-//  last_word := ""
 
   words := strings.Split(lines[0], " ")
   for lines_index := range lines {
@@ -107,32 +100,10 @@ func generate_markov (seed_word string, target_word_count int) string {
     if i >= chain_length && out_string[len(out_string)-1:] == "." {
       finished = true
     }
-    if i > 2 * chain_length {
+    if i > 5 * chain_length {
       finished = true
     }
   }
 
   return out_string
-}
-
-func main() {
-  fmt.Println("listening on port: " + os.Getenv("PORT"))
-  router := mux.NewRouter().StrictSlash(true)
-  router.HandleFunc("/", Index)
-  log.Fatal(http.ListenAndServe(":"+os.Getenv("PORT"), router))
-}
-
-func Index(w http.ResponseWriter, r *http.Request) {
-//    vars := mux.Vars(r)
-    length_param := r.URL.Query().Get("length")
-    i, err := strconv.Atoi(length_param)
-    if err != nil {
-      i = 15
-    }
-    seed_param := r.URL.Query().Get("seed")
-    if seed_param == "" {
-      fmt.Fprintf(w, "you must provide the 'seed' parameter")
-    } else {
-      fmt.Fprintf(w, generate_markov(seed_param, i))
-    }
 }
